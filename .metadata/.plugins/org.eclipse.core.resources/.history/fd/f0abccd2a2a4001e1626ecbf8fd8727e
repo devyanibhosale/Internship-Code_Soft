@@ -1,0 +1,198 @@
+package student;
+//AdminPageAdminPage}
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class Admin extends JFrame {
+    private JTextField nameField, emailField, passwordField;
+    private JButton submitButton, backButton;
+
+    public Admin() {
+        setTitle("Add Admin");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null); // Center the frame on the screen
+        getContentPane().setLayout(new BorderLayout());
+
+        createNavbar();
+        createFormPanel();
+
+        setVisible(true);
+    }
+
+    private void createNavbar() {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+        JMenuItem homeMenuItem = new JMenuItem("Home");
+        homeMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+        JMenuItem logoutMenuItem = new JMenuItem("Logout");
+        logoutMenuItem.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+
+        JMenu aboutMenu = new JMenu("About");
+        aboutMenu.setFont(new Font("Segoe UI", Font.PLAIN, 19));
+        JMenuItem aboutMenuItem = new JMenuItem("About");
+
+        fileMenu.add(homeMenuItem);
+        fileMenu.add(logoutMenuItem);
+        aboutMenu.add(aboutMenuItem);
+
+        menuBar.add(fileMenu);
+        menuBar.add(aboutMenu);
+
+        setJMenuBar(menuBar);
+
+        // Add action listeners
+        homeMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	 new Home();
+            }
+        });
+
+        logoutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(Admin.this, "Logout clicked");
+                // Perform logout actions
+            }
+        });
+
+        aboutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	 new About();            }
+        });
+    }
+
+    private void createFormPanel() {
+        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding
+
+        Font labelFont = new Font("Arial", Font.BOLD, 30);
+        Font textFieldFont = new Font("Arial", Font.PLAIN, 24);
+
+        JLabel  passwordLabel  = new JLabel("Password:");
+        passwordLabel.setFont(labelFont);
+        passwordField = new JPasswordField();
+        passwordField.setFont(textFieldFont);
+        passwordField.setPreferredSize(new Dimension(200, 10));
+        
+        JLabel nameLabel = new JLabel("Name:");
+        nameLabel.setFont(labelFont);
+        nameField = new JTextField();
+        nameField.setFont(textFieldFont);
+
+       
+        
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setFont(labelFont);
+        emailField = new JTextField();
+        emailField.setColumns(10);
+        emailField.setFont(textFieldFont);
+        emailField.setPreferredSize(new Dimension(165, 30));
+
+       
+
+     
+        formPanel.add(emailLabel);
+        formPanel.add(emailField);
+        formPanel.add(passwordLabel);
+        formPanel.add(passwordField);
+        formPanel.add(nameLabel);
+        formPanel.add(nameField);
+        submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
+
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.add(submitButton);
+
+        JPanel panel = new JPanel();
+        buttonPanel.add(panel);
+        backButton = new JButton("Back");
+        panel.add(backButton);
+        backButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Handle back action
+                // You can add your back functionality here
+                // For now, let's just close the window
+                dispose();
+            }
+        });
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Handle submit action
+                submitAdminDetails();
+            }
+        });
+
+        getContentPane().add(formPanel, BorderLayout.WEST);
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private void submitAdminDetails() {
+        // Collect the entered information
+        String name = nameField.getText();
+        String email = emailField.getText();
+        String password = passwordField.getText();
+
+        // JDBC connection parameters
+        String url = "jdbc:mysql://localhost:3306/student";
+        String username = "root";
+        String passwordDb = "pass";
+
+        try (Connection connection = DriverManager.getConnection(url, username, passwordDb)) {
+            // SQL query to insert data into the adminuser table
+            String insertQuery = "INSERT INTO adminuser ( mail, password,name) VALUES (?, ?, ?)";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+                // Set values for the prepared statement
+                preparedStatement.setString(1, name);
+                preparedStatement.setString(2, email);
+                preparedStatement.setString(3, password);
+
+                // Execute the SQL query
+                preparedStatement.executeUpdate();
+
+                // Show a success message
+                JOptionPane.showMessageDialog(this, "Admin details submitted!");
+
+                // Clear the form fields after successful submission
+                clearFormFields();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle the exception (e.g., show an error message)
+            JOptionPane.showMessageDialog(this, "Error submitting admin details. Please try again.");
+        }
+    }
+
+    private void clearFormFields() {
+        nameField.setText("");
+        emailField.setText("");
+        passwordField.setText("");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Admin();
+            }
+        });
+    }
+}

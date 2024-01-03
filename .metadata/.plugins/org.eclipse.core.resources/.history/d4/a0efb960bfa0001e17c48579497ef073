@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * 
+ */
+module ATMApplication {
+	requires java.desktop;
+}

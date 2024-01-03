@@ -1,0 +1,49 @@
+package ATMBooth;
+import javax.swing.*;
+import java.awt.*;
+import java.net.URL;
+
+public class Splash extends JFrame {
+
+    public Splash() {
+        setTitle("Splash");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null); // Center the JFrame on the screen
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(new Color(135, 206, 250)); // SkyBlue background color
+
+        JLabel headlineLabel = new JLabel("MYCODESPACE Bank");
+        headlineLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        headlineLabel.setHorizontalAlignment(JLabel.CENTER);
+        add(headlineLabel, BorderLayout.NORTH);
+
+        ImageIcon bankImage = createImageIcon("C://Users/bhosa/OneDrive/Desktop/code soft/Java/ATMApplication/src/ATMBooth/bank-icon.png"); // Replace with the path to your image
+        if (bankImage != null) {
+            JLabel imageLabel = new JLabel(bankImage);
+            imageLabel.setHorizontalAlignment(JLabel.CENTER);
+            add(imageLabel, BorderLayout.CENTER);
+        }
+
+        setVisible(true);
+    }
+
+    private ImageIcon createImageIcon(String path) {
+        URL imgURL = getClass().getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Splash();
+            }
+        });
+    }
+}
